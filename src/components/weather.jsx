@@ -2,14 +2,21 @@ import React ,{useState,useEffect} from 'react'
 import {myCityCurrentWeather} from '../myCityCurrentWeather'
 import {myCityWeatherForecast} from '../myCityWeatherForecast'
 import myCity from '../myCity.json'
+import {MY_API_KEY} from '../MY_API_KEY.json'
+require('dotenv').config()
+const axios = require('axios').default;
+
 
 
 export default function Weather () {
-    const [weather,setWeather] = useState(myCityWeatherForecast)
+    const [weather,setWeather] = useState()
+    const [disabled,setDisabled] = useState(false)
+    const KEY = MY_API_KEY
+    const FETCH_URL = `http://api.openweathermap.org/data/2.5/onecall?lat=42,97&lon=47,50&units=metric&exclude=current,minutely&appid=${process.env.REACT_APP_API_KEY}`
+    console.log('FETCH_URL',FETCH_URL)
     // console.log('myCity',myCity)
     // console.log('myCityCurrentWeather',myCityCurrentWeather)
     console.log('myCityWeatherForecast',myCityWeatherForecast)
-    console.log()
 
     const minFeelsLikeNightTemperature = (days) => {
         let minDifference = 0
@@ -49,29 +56,37 @@ export default function Weather () {
 
     
     const fetchWeather = () =>{
-        try{
-            const response = fetch(process.env.REACT_APP_API_BASE_URL,{
-                method:"GET",
-                credentials:"same-origin",
-                headers:{
-                    'Content-Type': 'application/json'
-                }
-            })
-            console.log("response",response)
-            setWeather(response.data)
-        }catch(e){
-            console.log(e)
-        }
+        axios.get(FETCH_URL)
+        .then(res => {
+          setWeather(res.data);
+        })
+        setDisabled(true)
     }
-    useEffect(()=> {
 
-    },[])
+    //     const fetchWeather = async () =>{
+    //     const response = await fetch(FETCH_URL,{
+    //         method:'GET',
+    //         mode: 'no-cors',
+    //         credentials: 'same-origin',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         }
+    //     })
+    //     setWeather(response)
+    //     setDisabled(true)
+    // }
 
+    // useEffect(()=> {
 
+    // },[weather])
+
+console.log('weather',weather)
     return(
-        <div>
+        <div>      
             <h1>Weather Forecast</h1>
-            <div>{weather.daily.slice(0,5).map((day,index) => <div key={index}>
+            <button disabled={disabled} onClick={fetchWeather}>Fetch weather</button>
+            <div>{ !weather ? <div>No data.Need to fetch data</div>
+            : weather.daily.slice(0,5).map((day,index) => <div key={index}>
                 <div></div>
                 <h5>Day: {index + 1} Date: {new Date(day.dt*1000).toString()}</h5>
                 <div>Temperature "feels like" night : {day.feels_like.night} &#8451;</div>               
@@ -84,18 +99,17 @@ export default function Weather () {
                 
                 </div>
                 <div>
-                    {weather.daily.filter((d,index) => minFeelsLikeNightTemperature(weather.daily).index == index)
-                    .map(d => <div>
+                    {!weather ? <div></div>
+                    :weather.daily.filter((d,index) => minFeelsLikeNightTemperature(weather.daily).index == index)
+                    .map((d,index) => <div key={index}>
                         <h4>Minimal difference night =  {new Date(d.dt*1000).toString()}</h4>
                         <div>Temperature "feels like" night : {d.feels_like.night} &#8451;</div>
                         <div>Temperature night: {d.temp.night} &#8451;</div> 
                         <div>Temperature Difference = {(d.temp.night - d.feels_like.night).toFixed(2)} &#8451;</div>
                     </div>)}
-                    {console.log('minFeelsLikeNightTemperature(weather.daily)',minFeelsLikeNightTemperature(weather.daily))}
-                {console.log('weather',weather.daily.filter((d,index) => minFeelsLikeNightTemperature(weather.daily).index == index))}
+               
                 </div>
-                {console.log('funcData')}
-            <button onClick={fetchWeather}>Fetch weather</button>
+           
         </div>
     )
 }

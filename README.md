@@ -1,6 +1,12 @@
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+For run project make 
+git clone https://github.com/crecker05ru/weather-api-reactjs
+cd weather-api-reactjs
+npm init
+create your own .env file with environment variables
+npm run start
 
 ## Available Scripts
 
