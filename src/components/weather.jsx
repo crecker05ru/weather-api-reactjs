@@ -55,26 +55,26 @@ export default function Weather () {
     //     }
 
     
-    const fetchWeather = () =>{
-        axios.get(FETCH_URL)
-        .then(res => {
-          setWeather(res.data);
-        })
-        setDisabled(true)
-    }
-
-    //     const fetchWeather = async () =>{
-    //     const response = await fetch(FETCH_URL,{
-    //         method:'GET',
-    //         mode: 'no-cors',
-    //         credentials: 'same-origin',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         }
+    // const fetchWeather = () =>{
+    //     axios.get(FETCH_URL)
+    //     .then(res => {
+    //       setWeather(res.data);
     //     })
-    //     setWeather(response)
     //     setDisabled(true)
     // }
+
+        const fetchWeather = async () =>{
+        await fetch(FETCH_URL)
+        .then((response)=> {
+            return response.json()
+        })
+        .then((data)=>{
+            console.log('data',data)
+            setWeather(data)
+        })
+       
+        setDisabled(true)
+    }
 
     // useEffect(()=> {
 
